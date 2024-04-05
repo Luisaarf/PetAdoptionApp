@@ -23,18 +23,18 @@ const LoginScreen = () => {
       <SafeAreaView>
         <Text style={[styles.text, styles.label]}>EMAIL</Text>
         <TextInput 
-        style={styles.input}
-        placeholder="user@exemplo.com.br" 
-        onChangeText={newText => setEmailInput(newText)}
-        defaultValue={emailInput}
+          style={styles.input}
+          placeholder="user@exemplo.com.br" 
+          onChangeText={newText => setEmailInput(newText)}
+          defaultValue={emailInput}
         />
         <Text style={[styles.text, styles.label]}>SENHA</Text>
         <TextInput 
-        style={styles.input}
-        placeholder="*****" 
-        secureTextEntry = {true}
-        onChangeText={newText => setPasswordInput(newText)}
-        defaultValue={passwordInput}
+          style={styles.input}
+          placeholder="*****" 
+          secureTextEntry = {true}
+          onChangeText={newText => setPasswordInput(newText)}
+          defaultValue={passwordInput}
         />
         <View style={styles.button}>
           <Pressable style={styles.buttonPressable} onPress={() => {handleLogin()}}>
