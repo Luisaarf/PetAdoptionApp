@@ -5,10 +5,18 @@ import { Image, StyleSheet, Text, View, Button, SafeAreaView, TextInput } from '
 
 const HomeScreen = () => {
     return (
-        <View>
+        <View style={styles.container}>
         <Text>Home Screen</Text>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      backgroundColor: '#fff',
+    },
+});
 
 export default HomeScreen;

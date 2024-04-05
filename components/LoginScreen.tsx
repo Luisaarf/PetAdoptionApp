@@ -1,23 +1,34 @@
 
 import React, {useState}from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Image, StyleSheet, Text, View, Button, SafeAreaView, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, View, Button, SafeAreaView, TextInput, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackTypes } from '../App';
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = () => {
+    const navigation = useNavigation<StackTypes>();
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
+
+    const handleLogin = () => {
+      console.log('Login attempt:', emailInput, passwordInput);
+      emailInput != '' && passwordInput != '' ?
+      navigation.navigate('Home'): console.log('Preencha todos os campos');
+    }
   return (
     <View style={styles.container}>
       <Image style={styles.image} source={require('../assets/ico.png')} />
-      <Text style={styles.text}>LOGIN</Text>
-      <Text style={styles.text}>Insira seus dados para continuar</Text>
+      <Text style={[styles.text, styles.title]}>LOGIN</Text>
+      <Text style={[styles.text, styles.directions]}>Insira seus dados para continuar</Text>
       <SafeAreaView>
+        <Text style={[styles.text, styles.label]}>EMAIL</Text>
         <TextInput 
         style={styles.input}
         placeholder="user@exemplo.com.br" 
         onChangeText={newText => setEmailInput(newText)}
         defaultValue={emailInput}
         />
+        <Text style={[styles.text, styles.label]}>SENHA</Text>
         <TextInput 
         style={styles.input}
         placeholder="*****" 
@@ -25,8 +36,10 @@ const LoginScreen = ({navigation}) => {
         onChangeText={newText => setPasswordInput(newText)}
         defaultValue={passwordInput}
         />
-        <View style={styles.buttonContainer}>
-          <Button color="#841584" title="Entrar" onPress={() => {}} />
+        <View style={styles.button}>
+          <Pressable style={styles.buttonPressable} onPress={() => {handleLogin()}}>
+            <Text style={styles.buttonText}>Entrar</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
       <StatusBar style="auto" />
@@ -34,41 +47,63 @@ const LoginScreen = ({navigation}) => {
   );
 }
 
-const ProfileScreen = ({navigation, route}) => {
-    return <Text>This is {route.params.name}'s profile</Text>;
-  };
-
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      // backgroundColor: '#fff',
-      // alignItems: 'center',
       justifyContent: 'center',
-      // alignSelf: 'flex-start',
+      backgroundColor: '#fff',
     },
     text : {
       fontSize: 15,
       alignSelf: 'flex-start',
       marginLeft: 30,
     },
+    directions: {
+      marginBottom: 35
+    },
+    title: {
+      fontWeight: 'bold',
+    },
+    label:{ 
+      color: "#cb3ce3",
+      marginTop: 5,
+      
+    },
     image: {
-      width: 50,
-      height: 50,
+      width: 40,
+      height: 40,
       alignSelf: 'flex-start',
       margin: 30,
+      marginBottom: 20
     },
-    buttonContainer: {
-      margin: 20,
+    button: {
+      margin: 30,
+    },
+    buttonPressable: {
+      margin: 0,
+      height: 50,
+      borderRadius: 100 ,
+      borderTopColor: "black",
+      backgroundColor:"#cb3ce3",
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      color: 'white',
+      fontWeight: 'bold',
     },
     input : {
       height: 40,
-      width: 200,
-      borderColor: 'blue',
+      borderColor: 'black',
       borderTopWidth: 0,
+      borderLeftWidth: 0,
+      borderRightWidth: 0,
       borderBottomWidth: 1,
       borderWidth: 1,
-      margin: 10,
       marginLeft: 30,
+      marginRight: 30,
+      marginBottom: 15
     }
   });
 
