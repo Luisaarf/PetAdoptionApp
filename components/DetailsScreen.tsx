@@ -8,6 +8,14 @@ const DetailsScreen = () => {
         <Text>Details Screen</Text>
         </View>
     );
-    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      backgroundColor: '#fff',
+    },
+})
 
 export default DetailsScreen;
