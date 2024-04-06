@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Image, StyleSheet, Text, View, Button, SafeAreaView, TextInput, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackTypes } from '../App';
+import GetAuth from '../data/api_login';
 
 const LoginScreen = () => {
     const navigation = useNavigation<StackTypes>();
@@ -12,6 +13,8 @@ const LoginScreen = () => {
 
     const handleLogin = () => {
       console.log('Login attempt:', emailInput, passwordInput);
+      const response = GetAuth(emailInput, passwordInput);
+      console.log(response, 'response');
       emailInput != '' && passwordInput != '' ?
       navigation.navigate('Home'): console.log('Preencha todos os campos');
     }
