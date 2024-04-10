@@ -1,23 +1,39 @@
 
-import React, {useState}from 'react';
+import React, {useEffect, useCallback, useState}from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Image, StyleSheet, Text, View, Button, SafeAreaView, TextInput, Pressable } from 'react-native';
+import { Image, StyleSheet, Text, View, Button, SafeAreaView, TextInput, Pressable, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackTypes } from '../App';
-import GetAuth from '../data/api_login';
+import GetAuth from '../api/api_login';
+import GetCategories from '../api/api_home_categories';
 
 const LoginScreen = () => {
     const navigation = useNavigation<StackTypes>();
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
+    // const [data, setData] = useState({});
 
-    const handleLogin = () => {
+    // GetCategories()
+
+    // const handleLogin = () => {
+    //   console.log('Login attempt:', emailInput, passwordInput);
+    //   emailInput != '' && passwordInput != '' ?
+    //   GetAuth({username: emailInput, password: passwordInput}).then((result) => {
+    //   result.status == 200 ? navigation.navigate('Home') : console.log('Erro ao logar') })
+    //   : console.log('Preencha todos os campos');
+    // }
+
+    const handleLogin = useCallback(() => {
       console.log('Login attempt:', emailInput, passwordInput);
-      const response = GetAuth(emailInput, passwordInput);
-      console.log(response, 'response');
-      emailInput != '' && passwordInput != '' ?
-      navigation.navigate('Home'): console.log('Preencha todos os campos');
-    }
+      if (emailInput !== '' && passwordInput !== '') {
+        GetAuth({ username: emailInput, password: passwordInput }).then((result) => {
+          result.responseStatus === 200 ? navigation.navigate('Home') : console.log('Erro ao logar');
+        });
+      } else {
+        console.log('Preencha todos os campos');
+      }
+    }, [emailInput, passwordInput, navigation]);
+
   return (
     <View style={styles.container}>
       <Image style={styles.image} source={require('../assets/ico.png')} />
@@ -40,6 +56,7 @@ const LoginScreen = () => {
           defaultValue={passwordInput}
         />
         <View style={styles.button}>
+          {/* <TouchableOpacity onPress={() => {navigation.navigate('Register')}}> */}
           <Pressable style={styles.buttonPressable} onPress={() => {handleLogin()}}>
             <Text style={styles.buttonText}>Entrar</Text>
           </Pressable>

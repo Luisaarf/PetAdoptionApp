@@ -13,7 +13,7 @@ const optionsDropdown = [
     {label: 'Peixes', value: 'Peixes'}
 ];
 
-const HomeScreen = () => {
+const HomeScreen = (token : string, type : string) => {
     const navigation = useNavigation<StackTypes>();
     const [value, setValue] = useState(optionsDropdown[0].value);
 
