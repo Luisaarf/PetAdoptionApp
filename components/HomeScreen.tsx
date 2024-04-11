@@ -4,18 +4,23 @@ import { StyleSheet, Text, View, Pressable, Image } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
 import { StackTypes } from '../App';
+import GetCategories from '../api/api_home_categories';
 
 const optionsDropdown = [
-    {label: 'Todos', value: 'Todos'},
-    {label: 'Cachorros', value: 'Cachorros'},
-    {label: 'Gatos', value: 'Gatos'},
-    {label: 'Coelhos', value: 'Coelhos'},
-    {label: 'Peixes', value: 'Peixes'}
+    {label: 'Todos', value: 'Todos'}
 ];
 
-const HomeScreen = (token : string, type : string) => {
+const HomeScreen = () => {
     const navigation = useNavigation<StackTypes>();
+    const token =  navigation.getState()?.routes[1]?.params?.token;
+    const type =  navigation.getState()?.routes[1]?.params?.type;
     const [value, setValue] = useState(optionsDropdown[0].value);
+
+    GetCategories(token ?? '', type?? '').then((result) => {
+        result.map((item : any) => {
+            optionsDropdown.push({label: item.name, value: item.id});
+        });
+    });
 
     const handlePetDetail = () => {
         navigation.navigate('Details')

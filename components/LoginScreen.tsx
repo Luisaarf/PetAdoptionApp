@@ -11,23 +11,14 @@ const LoginScreen = () => {
     const navigation = useNavigation<StackTypes>();
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
-    // const [data, setData] = useState({});
-
-    // GetCategories()
-
-    // const handleLogin = () => {
-    //   console.log('Login attempt:', emailInput, passwordInput);
-    //   emailInput != '' && passwordInput != '' ?
-    //   GetAuth({username: emailInput, password: passwordInput}).then((result) => {
-    //   result.status == 200 ? navigation.navigate('Home') : console.log('Erro ao logar') })
-    //   : console.log('Preencha todos os campos');
-    // }
 
     const handleLogin = useCallback(() => {
       console.log('Login attempt:', emailInput, passwordInput);
       if (emailInput !== '' && passwordInput !== '') {
         GetAuth({ username: emailInput, password: passwordInput }).then((result) => {
-          result.responseStatus === 200 ? navigation.navigate('Home') : console.log('Erro ao logar');
+          result.responseStatus === 200 ? 
+          navigation.navigate('Home', {token : result.data.token, type: result.data.type} ) 
+          : console.log('Erro ao logar');
         });
       } else {
         console.log('Preencha todos os campos');

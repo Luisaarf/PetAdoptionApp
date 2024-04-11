@@ -4,12 +4,13 @@ import { createNativeStackNavigator, NativeStackNavigationProp} from '@react-nav
 import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
 import DetailsScreen from './components/DetailsScreen';
+import HomeScreenProps from './components/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
 type StackNavigation = {
   Login : undefined;
-  Home: undefined;
+  Home: { token: string, type: string };
   Details: undefined;
 }
 
@@ -24,10 +25,12 @@ const App: React.FC = () => {
           component={LoginScreen}
         />
         <Stack.Screen 
-          name="Home" component={HomeScreen}
+          name="Home" 
+          component={HomeScreen} 
         />
         <Stack.Screen 
-          name="Details" component={DetailsScreen}
+          name="Details" 
+          component={DetailsScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
