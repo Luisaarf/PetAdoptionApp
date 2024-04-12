@@ -1,42 +1,87 @@
 
-import React, {useState}from 'react';
-import { StyleSheet, Text, View, Pressable, Image } from 'react-native';
+import React, {useEffect, useState}from 'react';
+import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
 import { StackTypes } from '../App';
 import GetCategories from '../api/api_home_categories';
+import GetAnimalDetail from '../api/api_details';
+import GetAllAnimals from '../api/api_home_animals';
 
 const optionsDropdown = [
     {label: 'Todos', value: 'Todos'}
 ];
 
+type AnimalDataResponse = {
+    id: number,
+    name: string,
+    age: number,
+    categoryId: string,
+    description: string,
+    img: string,
+}
+
 const HomeScreen = () => {
     const navigation = useNavigation<StackTypes>();
     const token =  navigation.getState()?.routes[1]?.params?.token;
-    const type =  navigation.getState()?.routes[1]?.params?.type;
+    const type = navigation.getState()?.routes[1]?.params?.type;
+    const [data, setData] = useState<AnimalDataResponse[]>([]);
+    const [dataToShow, setDataToShow] = useState<AnimalDataResponse[]>([]);
+    const [loading, setLoading] = useState(true);
     const [value, setValue] = useState(optionsDropdown[0].value);
+    const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-    GetCategories(token ?? '', type?? '').then((result) => {
-        result.map((item : any) => {
-            optionsDropdown.push({label: item.name, value: item.id});
+
+    useEffect(() => {
+      if (isFirstLoad) {
+        setLoading(true);
+        GetCategories(token ?? '', type?? '').then((result) => {
+            result.map((item : any) => {
+                optionsDropdown.push({label: item.name, value: item.id});
+            });
         });
-    });
+        GetAllAnimals(token ?? '', type ?? '').then((result) => {
+            setData(result);
+            setDataToShow(result); 
+        })
+        setLoading(false);
+        setIsFirstLoad(false);
+      }
+    }, [isFirstLoad]);
+
+    const updateDataAnimal =  (categoryId : string) => {
+        GetAllAnimals(token ?? '', type ?? '').then((result) => {
+            setData(result);
+        });
+        const newData = data.filter((item) => { 
+            if (categoryId === 'Todos') {
+                return item
+            } 
+            if( item.categoryId === categoryId){ 
+                console.log('igual')
+               return item
+            }
+        })
+        setDataToShow(newData); 
+        setLoading(false);
+    }
+
+    const GetCategNamebyId = (id : string) => {
+        const categoryName = optionsDropdown.find(item => item.value === id)?.label;
+        if (categoryName === undefined) {
+            // return 'Categoria não encontrada';
+            return 'Schweizerischer Niederlaufhund 8'
+        }
+        if (Number(id) < 10){
+            return categoryName + ' 0' + id;
+         } else {
+            return categoryName + ' ' + id;
+         }
+
+    }
 
     const handlePetDetail = () => {
         navigation.navigate('Details')
-    }
-
-    const ResultHandler = () => {
-        return (
-            <Pressable style={styles.petContainerPressable} onPress={() => {handlePetDetail()}}>
-                    <Image style={styles.image} source={require('../assets/ico.png')} />
-                    <View style={styles.petInfo}>
-                        <Text style={styles.petType}>PET TYPE</Text>
-                        <Text style={styles.petName}>Pet Name</Text>
-                        <Text style={styles.petAge}>PET AGE</Text>
-                    </View>
-            </Pressable>
-        );
     }
 
     return (
@@ -53,11 +98,35 @@ const HomeScreen = () => {
                 maxHeight={300}
                 labelField='label'
                 valueField='value'
-                onChange={item => setValue(item.value)}
+                onChange={item => {
+                    setLoading(true);
+                    setValue(item.value);
+                    updateDataAnimal(item.value);
+                    }}
             />
             <View style={styles.searchResults}>
                 <Text style={styles.searchResultsText}>Resultados da busca:</Text>
-                {ResultHandler()}
+                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+                    {loading ? 
+                        <Image style={styles.imageLoading} source={require('../assets/loading-7528_256.gif')} />
+                        : 
+                        dataToShow.length === 0 ? 
+                            <Text style={styles.noResultText}>Nenhum resultado encontrado</Text> 
+                            :
+                            dataToShow.map((item, index) => (
+                                <View  key={index}>
+                                    <Pressable  key={item.id} style={styles.petContainerPressable} onPress={() => {handlePetDetail()}}>
+                                        <Image style={styles.image} source={{uri:item.img}} />
+                                        <View style={styles.petInfo}>
+                                            <Text style={styles.petType}>{GetCategNamebyId(item.categoryId)}</Text>
+                                            <Text style={styles.petName}>{item.name}</Text>
+                                            <Text style={styles.petAge}>{item.age} Anos</Text>
+                                        </View>
+                                    </Pressable>
+                                </View>
+                            ))
+                }
+                </ScrollView>
             </View>
         </View>
     );
@@ -73,6 +142,17 @@ const styles = StyleSheet.create({
         fontSize: 15,
         alignSelf: 'flex-start',
         marginLeft: 30,
+    },
+    imageLoading: {
+        width: 100,
+        height: 100,
+        alignSelf: 'center',
+    },
+    noResultText:{
+        alignSelf: 'center',
+        marginTop: 30,
+        color: '#cb3ce3',
+        fontSize: 18,
     },
     directions: {
         marginBottom: 5
@@ -114,7 +194,7 @@ const styles = StyleSheet.create({
     },
     petContainerPressable: {
         backgroundColor: '#fff',
-        height : 70,
+        height : 85,
         marginLeft: 30,
         marginRight: 30,
         marginTop: 10,
@@ -122,10 +202,12 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         borderRadius: 10, 
+
+        flexWrap: 'wrap',
     }, 
     image: {
-        width: 70,
-        height: 70,
+        width: 85,
+        height: 85,
         borderTopLeftRadius: 10, 
         borderBottomLeftRadius: 10,
         alignSelf: 'flex-start',
@@ -134,16 +216,31 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
+        // flexWrap: 'wrap',
     },
     petType : {	
+        fontWeight: 'bold',
+        fontSize: 14,
         paddingLeft: 10,
+        
+        // flexWrap: 'wrap',
+        // flex : 3,
     },
     petName : {
+        fontWeight: 'bold',
         paddingLeft: 10,
     },
     petAge : {
         paddingLeft: 10,
     },
+    scrollView : {
+        maxHeight: 420,
+    },
+    scrollViewContent : {
+        // overflow: 'hidden',
+        borderRadius: 10,
+        paddingBottom: 20,
+    }
 });
 
 export default HomeScreen;

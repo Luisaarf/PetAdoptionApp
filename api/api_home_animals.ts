@@ -1,41 +1,29 @@
-// url: {baseURL}/animals
-// tipo: GET
-// cabeçalhos:
-//   - Authorization
-// resposta:
-// [
-//     {
 //         "id": "1",
 //         "categoryId": "1",
 //         "name": "Oriental",
 //         "age": 7,
 //         "img": "http://loremflickr.com/640/480/animals?lock=1"
 
-//     },
-//     ...
-// ]
 
-export type AuthForm = {
-    username: string,
-    password: string
-}
+const GetAllAnimals = async (token : string,type : string) =>  {
 
-const GetAllAnimals = async (databody : AuthForm) =>  {
 
+    const encodedToken = encodeURIComponent(token);
     const headers = new Headers({
-        "Content-Type" : "application/json"
+        "Content-Type" : "application/json",
+        "Authorization" : type + ' ' + encodedToken
     });
 
+    const baseUrl = "https://tools.lab.ianclive.com/test-mobile-api/animals";
+
     var requestOptions = {
-    method:'POST',
+    method:'GET',
     headers: headers,
     redirect: 'follow',
-    body: JSON.stringify(databody), // com username e password
     };
 
     try {
-        const response = await fetch("https://tools.lab.ianclive.com/test-mobile-api/auth/signin", requestOptions)
-        console.log('Resposta:', response);
+        const response = await fetch(baseUrl, requestOptions)
         if (!response.ok) {
             throw new Error('Erro ao fazer a requisição'); 
         }
