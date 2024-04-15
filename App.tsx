@@ -4,14 +4,14 @@ import { createNativeStackNavigator, NativeStackNavigationProp} from '@react-nav
 import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
 import DetailsScreen from './components/DetailsScreen';
-import HomeScreenProps from './components/HomeScreen';
+import { AnimalDataResponse } from './types/AnimalData';
 
 const Stack = createNativeStackNavigator();
 
 type StackNavigation = {
   Login : undefined;
   Home: { token: string, type: string };
-  Details: undefined;
+  Details: {pet : AnimalDataResponse, category: string, token : string, type : string};
 }
 
 export type StackTypes = NativeStackNavigationProp<StackNavigation>;
@@ -27,10 +27,12 @@ const App: React.FC = () => {
         <Stack.Screen 
           name="Home" 
           component={HomeScreen} 
+          initialParams={{token: '', type: ''}}
         />
         <Stack.Screen 
           name="Details" 
           component={DetailsScreen}
+          initialParams={{pet: {id: 0, name: '', age: 0, categoryId: '', img: '', description: '', phone: '', email: ''}, category: '', token: '', type: ''}}
         />
       </Stack.Navigator>
     </NavigationContainer>

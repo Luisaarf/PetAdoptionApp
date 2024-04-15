@@ -5,83 +5,74 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
 import { StackTypes } from '../App';
 import GetCategories from '../api/api_home_categories';
-import GetAnimalDetail from '../api/api_details';
 import GetAllAnimals from '../api/api_home_animals';
-
-const optionsDropdown = [
-    {label: 'Todos', value: 'Todos'}
-];
-
-type AnimalDataResponse = {
-    id: number,
-    name: string,
-    age: number,
-    categoryId: string,
-    description: string,
-    img: string,
-}
+import {AnimalDataResponse } from '../types/AnimalData';
 
 const HomeScreen = () => {
     const navigation = useNavigation<StackTypes>();
-    const token =  navigation.getState()?.routes[1]?.params?.token;
-    const type = navigation.getState()?.routes[1]?.params?.type;
-    const [data, setData] = useState<AnimalDataResponse[]>([]);
-    const [dataToShow, setDataToShow] = useState<AnimalDataResponse[]>([]);
+    const {params} = navigation.getState()?.routes[1];
+    const { token = '', type = '' } = params || {};
+    const [allAnimals, setAllAnimal] = useState<AnimalDataResponse[]>([]);
+    const [filteredAnimals, setFilteredAnimals] = useState<AnimalDataResponse[]>([]);
     const [loading, setLoading] = useState(true);
-    const [value, setValue] = useState(optionsDropdown[0].value);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
-
+    const [optionsDropdown, setOptionsDropdown] = useState([ {label: 'Todos', value: 'Todos'}]);
+    const [selectedCategory, setSelectedCategory] = useState(optionsDropdown[0].value);
 
     useEffect(() => {
-      if (isFirstLoad) {
-        setLoading(true);
-        GetCategories(token ?? '', type?? '').then((result) => {
-            result.map((item : any) => {
-                optionsDropdown.push({label: item.name, value: item.id});
-            });
-        });
-        GetAllAnimals(token ?? '', type ?? '').then((result) => {
-            setData(result);
-            setDataToShow(result); 
-        })
-        setLoading(false);
-        setIsFirstLoad(false);
-      }
-    }, [isFirstLoad]);
+        if (isFirstLoad) {
+          setLoading(true);
+          // para garantir que todas as operações assíncronas sejam concluídas antes de atualizar os estados
+          //evitando múltiplas renderizações enquanto carrega os dados
+          Promise.all([
+            GetCategories(token ?? '', type ?? ''),
+            GetAllAnimals(token ?? '', type ?? '')
+          ]).then(([categories, animals]) => {
+            const categoryOptions = categories.map((item: any) => ({
+              label: item.name,
+              value: item.id
+            }));
+            categoryOptions.unshift({label: 'Todos', value: 'Todos'});
+            setOptionsDropdown(categoryOptions);
+            setAllAnimal(animals);
+            setFilteredAnimals(animals);
+            setLoading(false);
+            setIsFirstLoad(false);
+          }).catch(error => {
+            console.error("Erro ao carregar dados:", error);
+            setLoading(false);
+            setIsFirstLoad(false);
+          });
+        }
+      }, [isFirstLoad, token, type]);
 
-    const updateDataAnimal =  (categoryId : string) => {
-        GetAllAnimals(token ?? '', type ?? '').then((result) => {
-            setData(result);
-        });
-        const newData = data.filter((item) => { 
-            if (categoryId === 'Todos') {
-                return item
-            } 
-            if( item.categoryId === categoryId){ 
-                console.log('igual')
-               return item
-            }
-        })
-        setDataToShow(newData); 
+    useEffect(() => {
+        updateDataAnimal(selectedCategory);
+    }, [selectedCategory]);
+
+    const updateDataAnimal = (categoryId: string) => {
+        setLoading(true);
+        if (categoryId === 'Todos') {
+            setFilteredAnimals(allAnimals);
+        } else {
+            const newAllAnimals = allAnimals.filter(item => item.categoryId === categoryId);
+            setFilteredAnimals(newAllAnimals);
+        }
         setLoading(false);
     }
 
     const GetCategNamebyId = (id : string) => {
-        const categoryName = optionsDropdown.find(item => item.value === id)?.label;
-        if (categoryName === undefined) {
-            // return 'Categoria não encontrada';
-            return 'Schweizerischer Niederlaufhund 8'
-        }
-        if (Number(id) < 10){
-            return categoryName + ' 0' + id;
-         } else {
-            return categoryName + ' ' + id;
-         }
-
+        const categoryFound = optionsDropdown.find(item => item.value === id)?.label;
+        return categoryFound ?   
+            Number(id) < 10 ?
+                 categoryFound+ ' 0' + id : 
+                 categoryFound + ' ' + id 
+            : 'Categoria não encontrada';
     }
 
-    const handlePetDetail = () => {
-        navigation.navigate('Details')
+    const handlePetDetail = (animal : AnimalDataResponse) => {
+        const categoryName = GetCategNamebyId(animal.categoryId);
+        navigation.navigate('Details', {pet: animal, category: categoryName, token, type} )
     }
 
     return (
@@ -94,13 +85,13 @@ const HomeScreen = () => {
                 selectedTextStyle={styles.selectedTextDropdown}
                 inputSearchStyle={styles.inputSearchDropdown}
                 iconStyle={styles.iconDropdown}
-                value={value}
+                value={selectedCategory}
                 maxHeight={300}
                 labelField='label'
                 valueField='value'
                 onChange={item => {
                     setLoading(true);
-                    setValue(item.value);
+                    setSelectedCategory(item.value);
                     updateDataAnimal(item.value);
                     }}
             />
@@ -110,17 +101,17 @@ const HomeScreen = () => {
                     {loading ? 
                         <Image style={styles.imageLoading} source={require('../assets/loading-7528_256.gif')} />
                         : 
-                        dataToShow.length === 0 ? 
+                        filteredAnimals.length === 0 ? 
                             <Text style={styles.noResultText}>Nenhum resultado encontrado</Text> 
                             :
-                            dataToShow.map((item, index) => (
+                            filteredAnimals.map((item, index) => (
                                 <View  key={index}>
-                                    <Pressable  key={item.id} style={styles.petContainerPressable} onPress={() => {handlePetDetail()}}>
-                                        <Image style={styles.image} source={{uri:item.img}} />
+                                    <Pressable  key={item.id} style={styles.petContainerPressable} onPress={() => {handlePetDetail(item)}}>
+                                        <Image style={styles.image} source={{uri:item.img}} accessibilityLabel={`Imagem de ${item.name}`}/>
                                         <View style={styles.petInfo}>
-                                            <Text style={styles.petType}>{GetCategNamebyId(item.categoryId)}</Text>
-                                            <Text style={styles.petName}>{item.name}</Text>
-                                            <Text style={styles.petAge}>{item.age} Anos</Text>
+                                            <Text style={styles.petType} accessibilityLabel={`Category: ${GetCategNamebyId(item.categoryId)}`}>{GetCategNamebyId(item.categoryId)}</Text>
+                                            <Text style={styles.petName} accessibilityLabel={`Nome: ${item.name}`} >{item.name}</Text>
+                                            <Text style={styles.petAge} accessibilityLabel={`Age: ${item.age} years`} >{item.age} Anos</Text>
                                         </View>
                                     </Pressable>
                                 </View>
@@ -201,9 +192,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         display: 'flex',
         flexDirection: 'row',
-        borderRadius: 10, 
-
-        flexWrap: 'wrap',
+        borderRadius: 10,
     }, 
     image: {
         width: 85,
@@ -216,15 +205,14 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        // flexWrap: 'wrap',
+        width: 200,
     },
     petType : {	
         fontWeight: 'bold',
         fontSize: 14,
-        paddingLeft: 10,
-        
-        // flexWrap: 'wrap',
-        // flex : 3,
+        paddingLeft: 10,    
+        marginBottom: 5,
+        textAlign: 'left'
     },
     petName : {
         fontWeight: 'bold',
@@ -232,12 +220,12 @@ const styles = StyleSheet.create({
     },
     petAge : {
         paddingLeft: 10,
+        fontSize: 12,
     },
     scrollView : {
         maxHeight: 420,
     },
     scrollViewContent : {
-        // overflow: 'hidden',
         borderRadius: 10,
         paddingBottom: 20,
     }

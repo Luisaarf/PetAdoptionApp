@@ -20,9 +20,6 @@ const GetAuth = async (databody : AuthForm) =>  {
         const response = await fetch("https://tools.lab.ianclive.com/test-mobile-api/auth/signin", requestOptions)
         const responseStatus = response.status;
         const data = await response.json(); 
-        if (!response.ok) {
-            throw new Error('Erro ao fazer a requisição'); 
-        }
         return  {data, responseStatus};
     } catch (error : any) { return error }
 }

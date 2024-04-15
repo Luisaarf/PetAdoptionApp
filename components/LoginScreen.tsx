@@ -1,29 +1,65 @@
 
-import React, {useEffect, useCallback, useState}from 'react';
+import React, { useCallback, useState}from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Image, StyleSheet, Text, View, Button, SafeAreaView, TextInput, Pressable, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackTypes } from '../App';
 import GetAuth from '../api/api_login';
-import GetCategories from '../api/api_home_categories';
 
 const LoginScreen = () => {
     const navigation = useNavigation<StackTypes>();
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
+    const [inputStyle, setInputStyle] = useState( {...styles.input} );
+    const [inputMessageStyle, setInputMessageStyle] = useState( {...styles.inputMessage} );
+    const [inputMessage, setInputMessage] = useState('Usuário ou senha inválidos');
 
     const handleLogin = useCallback(() => {
       console.log('Login attempt:', emailInput, passwordInput);
+      InputToDefault();
       if (emailInput !== '' && passwordInput !== '') {
         GetAuth({ username: emailInput, password: passwordInput }).then((result) => {
           result.responseStatus === 200 ? 
-          navigation.navigate('Home', {token : result.data.token, type: result.data.type} ) 
-          : console.log('Erro ao logar');
+          navigation.navigate('Home', {token : result.data.token, type: result.data.type} )
+          :  InputStyleError(result.data.message, result.responseStatus);
+          
         });
       } else {
-        console.log('Preencha todos os campos');
+        InputStyleError('Preencha todos os campos', 0)
       }
     }, [emailInput, passwordInput, navigation]);
+
+    const InputToDefault = () => {
+      setInputStyle(
+        {
+             ...styles.input,
+             borderColor: 'black'
+          }
+      );
+      setInputMessageStyle(
+        {
+          ...styles.inputMessage,
+          opacity: 0
+        }
+      );
+    }
+
+    const InputStyleError = (response : string, responseId : number) => {
+      console.log('Error',responseId, ':', response)
+      setInputStyle(
+        {
+             ...styles.input,
+             borderColor: 'red'
+          }
+      );
+      setInputMessageStyle(
+        {
+          ...styles.inputMessage,
+          opacity: 1
+        }
+      );
+      setInputMessage(response)
+    }
 
   return (
     <View style={styles.container}>
@@ -33,24 +69,24 @@ const LoginScreen = () => {
       <SafeAreaView>
         <Text style={[styles.text, styles.label]}>EMAIL</Text>
         <TextInput 
-          style={styles.input}
+          style={inputStyle}
           placeholder="user@exemplo.com.br" 
           onChangeText={newText => setEmailInput(newText)}
           defaultValue={emailInput}
         />
         <Text style={[styles.text, styles.label]}>SENHA</Text>
         <TextInput 
-          style={styles.input}
+          style={inputStyle}
           placeholder="*****" 
           secureTextEntry = {true}
           onChangeText={newText => setPasswordInput(newText)}
           defaultValue={passwordInput}
         />
+        <Text style={inputMessageStyle}>{inputMessage}</Text>
         <View style={styles.button}>
-          {/* <TouchableOpacity onPress={() => {navigation.navigate('Register')}}> */}
-          <Pressable style={styles.buttonPressable} onPress={() => {handleLogin()}}>
+          <TouchableOpacity style={styles.buttonPressable} onPress={() => {handleLogin()}}>
             <Text style={styles.buttonText}>Entrar</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
       <StatusBar style="auto" />
@@ -115,7 +151,14 @@ const styles = StyleSheet.create({
       marginLeft: 30,
       marginRight: 30,
       marginBottom: 15
+    },
+    inputMessage : {
+      color: 'red',
+      marginLeft: 30,
+      marginRight: 30,
+      opacity: 0
     }
+
   });
 
 export default LoginScreen;
