@@ -32,6 +32,9 @@ const DetailsScreen = () => {
              :
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
                     <Image source={{uri:data?.img}} style={{width: 385, height: 385}}/>
+                    <TouchableOpacity style={[styles.buttonPressable, styles.buttonMoreImg]}>
+                        <Text style={styles.buttonText}>+</Text>
+                    </TouchableOpacity>
                     <View style={styles.headerInfo}>
                         <Text style={[styles.text, styles.petCategory]}>{category}</Text>
                         <Text style={styles.petName}>{data?.name}</Text>
@@ -58,6 +61,7 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       backgroundColor: '#fff',
+      display: 'flex',
     },
     text:{
         marginLeft: 30,
@@ -102,6 +106,13 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    buttonMoreImg: {
+        zIndex: 1,
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        top: 310,
+        right: 20
     },
     buttonText: {
         color: 'white',
