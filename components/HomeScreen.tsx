@@ -76,10 +76,11 @@ const HomeScreen = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={[styles.text, styles.title]}>HOME</Text>
-            <Text style={[styles.text, styles.directions]}>Escolha uma categoria para visualizar</Text>
+        <View style={styles.container} accessible={true}>
+            <Text  accessibilityLabel='Home Page' style={[styles.text, styles.title]}>HOME</Text>
+            <Text accessibilityLabel='Category Selection' style={[styles.text, styles.directions]}>Escolha uma categoria para visualizar</Text>
             <Dropdown 
+                accessibilityLabel={selectedCategory}
                 style={styles.dropdown}
                 data={optionsDropdown} 
                 selectedTextStyle={styles.selectedTextDropdown}
@@ -96,13 +97,13 @@ const HomeScreen = () => {
                     }}
             />
             <View style={styles.searchResults}>
-                <Text style={styles.searchResultsText}>Resultados da busca:</Text>
+                <Text accessibilityLabel={'Search result:'} style={styles.searchResultsText}>Resultados da busca:</Text>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
                     {loading ? 
-                        <Image style={styles.imageLoading} source={require('../assets/loading-7528_256.gif')} />
+                        <Image style={styles.imageLoading} accessibilityLabel='loading...' source={require('../assets/loading-7528_256.gif')} />
                         : 
                         filteredAnimals.length === 0 ? 
-                            <Text style={styles.noResultText}>Nenhum resultado encontrado</Text> 
+                            <Text style={styles.noResultText} accessibilityLabel='No results found' >Nenhum resultado encontrado</Text> 
                             :
                             filteredAnimals.map((item, index) => (
                                 <View  key={index}>

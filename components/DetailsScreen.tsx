@@ -26,27 +26,27 @@ const DetailsScreen = () => {
 
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} accessible={true}>
             {loading && data ? 
-                <Image source={require('../assets/loading-7528_256.gif')} style={{width: 200, height: 200}}/> 
+                <Image accessibilityLabel='loading...' source={require('../assets/loading-7528_256.gif')} style={{width: 200, height: 200}}/> 
              :
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-                    <Image source={{uri:data?.img}} style={{width: 385, height: 385}}/>
-                    <TouchableOpacity style={[styles.buttonPressable, styles.buttonMoreImg]}>
+                    <Image  accessibilityLabel='Pet selected image' source={{uri:data?.img}} style={{width: 385, height: 385}}/>
+                    <TouchableOpacity accessibilityLabel='Tap to see more images' style={[styles.buttonPressable, styles.buttonMoreImg]}>
                         <Text style={styles.buttonText}>+</Text>
                     </TouchableOpacity>
                     <View style={styles.headerInfo}>
-                        <Text style={[styles.text, styles.petCategory]}>{category}</Text>
-                        <Text style={styles.petName}>{data?.name}</Text>
-                        <Text style={styles.text}> Age: {data?.age}</Text>
+                        <Text accessibilityLabel={`Pet category: ${category} `} style={[styles.text, styles.petCategory]}>{category}</Text>
+                        <Text accessibilityLabel={`Pet name: ${data?.name} `} style={styles.petName}>{data?.name}</Text>
+                        <Text accessibilityLabel={`Pet age: ${data?.age} `} style={styles.text}> Age: {data?.age}</Text>
                     </View>
-                    <Text style={[styles.text, styles.description]}> {data?.description}</Text>
+                    <Text accessibilityLabel={`Pet description: ${data?.description} `} style={[styles.text, styles.description]}> {data?.description}</Text>
                     <View style={styles.contactSession}>
                         <Text style={[styles.text, styles.contactTitle]}>Contact Information</Text>
-                        <Text style={styles.text}>Number: {data?.phone}</Text>
-                        <Text style={styles.text}>Email: {data?.email}</Text>
+                        <Text accessibilityLabel={`Contact number: ${data?.phone} `} style={styles.text}>Number: {data?.phone}</Text>
+                        <Text accessibilityLabel={`Contact number: ${data?.email} `} style={styles.text}>Email: {data?.email}</Text>
                     </View>
-                    <TouchableOpacity style={styles.buttonPressable} onPress={() => navigation.goBack()}>
+                    <TouchableOpacity accessibilityLabel={`Return to home page button`} style={styles.buttonPressable} onPress={() => navigation.goBack()}>
                          <Text style={styles.buttonText}>Voltar</Text>
                     </TouchableOpacity>
                 </ScrollView>

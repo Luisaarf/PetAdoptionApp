@@ -62,29 +62,33 @@ const LoginScreen = () => {
     }
 
   return (
-    <View style={styles.container}>
-      <Image style={styles.image} source={require('../assets/ico.png')} />
-      <Text style={[styles.text, styles.title]}>LOGIN</Text>
+    <View style={styles.container} accessible={true}>
+      <Image style={styles.image} accessibilityLabel='icon Logo' source={require('../assets/ico.png')} />
+      <Text accessibilityLabel='Login' style={[styles.text, styles.title]}>LOGIN</Text>
       <Text style={[styles.text, styles.directions]}>Insira seus dados para continuar</Text>
       <SafeAreaView>
-        <Text style={[styles.text, styles.label]}>EMAIL</Text>
+        <Text nativeID={"formEmail"} style={[styles.text, styles.label]}>EMAIL</Text>
         <TextInput 
           style={inputStyle}
           placeholder="user@exemplo.com.br" 
           onChangeText={newText => setEmailInput(newText)}
           defaultValue={emailInput}
+          accessibilityLabel='Email input'
+          accessibilityLabelledBy={"formEmail"}
         />
-        <Text style={[styles.text, styles.label]}>SENHA</Text>
+        <Text nativeID={"formPassword"} style={[styles.text, styles.label]}>SENHA</Text>
         <TextInput 
           style={inputStyle}
           placeholder="*****" 
           secureTextEntry = {true}
           onChangeText={newText => setPasswordInput(newText)}
           defaultValue={passwordInput}
+          accessibilityLabel='Password input'
+          accessibilityLabelledBy={"formPassword"}
         />
-        <Text style={inputMessageStyle}>{inputMessage}</Text>
+        <Text accessibilityLabel={inputMessage} style={inputMessageStyle}>{inputMessage}</Text>
         <View style={styles.button}>
-          <TouchableOpacity style={styles.buttonPressable} onPress={() => {handleLogin()}}>
+          <TouchableOpacity accessibilityLabel='Sign in Button' style={styles.buttonPressable} onPress={() => {handleLogin()}}>
             <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
         </View>
