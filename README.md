@@ -11,7 +11,7 @@
 **3 Screens Available:** 
 Login > Home > Details
 
-<img src="assets/screenshots/LoginScreenApp.jpg" alt="Login Screen" style="width: 200px; height: 400px;"> <img src="assets/screenshots/HomeScreenApp.jpg" alt="Home Screen" style="width: 200px; height: 400px;"> <img src="assets/screenshots/DetailScreenApp.jpg" alt="Detail Screen" style="width: 200px; height: 400px;">
+<img src="assets/screenshots/LoginScreenApp.jpg" alt="Login Screen" style="width: 250px; height: 500px;"> <img src="assets/screenshots/HomeScreenApp.jpg" alt="Home Screen" style="width: 250px; height: 500px;"> <img src="assets/screenshots/DetailScreenApp.jpg" alt="Detail Screen" style="width: 250px; height: 500px;">
  
 ## Development
 
