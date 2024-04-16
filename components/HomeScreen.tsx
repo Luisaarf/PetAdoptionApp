@@ -7,6 +7,8 @@ import { StackTypes } from '../App';
 import GetCategories from '../api/api_home_categories';
 import GetAllAnimals from '../api/api_home_animals';
 import {AnimalDataResponse } from '../types/AnimalData';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 const HomeScreen = () => {
     const navigation = useNavigation<StackTypes>();
@@ -16,9 +18,9 @@ const HomeScreen = () => {
     const [filteredAnimals, setFilteredAnimals] = useState<AnimalDataResponse[]>([]);
     const [loading, setLoading] = useState(true);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
-    const [optionsDropdown, setOptionsDropdown] = useState([ {label: 'Todos', value: 'Todos'}]);
+    const [optionsDropdown, setOptionsDropdown] = useState([ {label: 'Todos', value: 'Todos', icon: 'paw'}]);
     const [selectedCategory, setSelectedCategory] = useState(optionsDropdown[0].value);
-
+    const iconsToUse = ['paw', 'dog', 'cat', 'fish', 'jellyfish', 'bird', 'cow', 'rabbit', 'panda', 'turtle', 'dog', 'dog','dog','dog', 'dog']
     useEffect(() => {
         if (isFirstLoad) {
           setLoading(true);
@@ -28,9 +30,10 @@ const HomeScreen = () => {
             GetCategories(token ?? '', type ?? ''),
             GetAllAnimals(token ?? '', type ?? '')
           ]).then(([categories, animals]) => {
-            const categoryOptions = categories.map((item: any) => ({
+            const categoryOptions = categories.map((item: any, index :number ) => ({
               label: item.name,
-              value: item.id
+              value: item.id,
+              icon: iconsToUse[index]
             }));
             categoryOptions.unshift({label: 'Todos', value: 'Todos'});
             setOptionsDropdown(categoryOptions);
@@ -70,10 +73,16 @@ const HomeScreen = () => {
             : 'Categoria não encontrada';
     }
 
+    const GetCategIconbyId = (id : string) => {
+        const categIconFound = optionsDropdown.find(item => item.value === id)?.icon;
+        return categIconFound ? categIconFound : 'paw';
+    }
+
     const handlePetDetail = (animal : AnimalDataResponse) => {
         const categoryName = GetCategNamebyId(animal.categoryId);
         navigation.navigate('Details', {pet: animal, category: categoryName, token, type} )
     }
+
 
     return (
         <View style={styles.container} accessible={true}>
@@ -111,7 +120,7 @@ const HomeScreen = () => {
                                         <Image style={styles.image} source={{uri:item.img}} accessibilityLabel={`Imagem de ${item.name}`}/>
                                         <View style={styles.petInfo}>
                                             <Text style={styles.petType} accessibilityLabel={`Category: ${GetCategNamebyId(item.categoryId)}`}>{GetCategNamebyId(item.categoryId)}</Text>
-                                            <Text style={styles.petName} accessibilityLabel={`Nome: ${item.name}`} >{item.name}</Text>
+                                            <Text style={styles.petName} accessibilityLabel={`Nome: ${item.name}`} > <Icon name={GetCategIconbyId(item.categoryId)} size={16}/> {item.name}</Text>
                                             <Text style={styles.petAge} accessibilityLabel={`Age: ${item.age} years`} >{item.age} Anos</Text>
                                         </View>
                                     </Pressable>
@@ -210,7 +219,7 @@ const styles = StyleSheet.create({
     },
     petType : {	
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: 16,
         paddingLeft: 10,    
         marginBottom: 5,
         textAlign: 'left'
