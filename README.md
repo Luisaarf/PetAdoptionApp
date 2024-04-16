@@ -6,7 +6,7 @@
 
 🇧🇷 -- Faça seu Login e visualize uma variedade de pets separados por categoria, cada um apresenta imagem, descrição, opção de contato...
 
-🇺🇸 -- Login and visualize a variety of pets separated by category, each one has an image, description, contact option...
+🇺🇸 -- Login and visualize a variety of pets separated by category, each with an image, description, contact option...
 
 **3 Screens Available:** 
 Login > Home > Details
@@ -18,7 +18,7 @@ Login > Home > Details
 🇧🇷 -- Para utilizar o aplicativo você precisa instalar o aplicativo Expo Go no seu celular ou rodar através de um emulador. 
 > :warning: Testado apenas em Android.
 
-🇺🇸 -- To be able to use this app you have to install the Expo Go app on your mobile or use an emulator instead.
+🇺🇸 -- To use this app, install the Expo Go app on your mobile or use an emulator instead.
 > :warning: Tested on Android only.
 
 - clone
